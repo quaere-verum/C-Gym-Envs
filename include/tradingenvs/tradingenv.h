@@ -47,7 +47,24 @@ public:
 	}
 
 	std::tuple<int, float> step(py::array_t<float> action) {
-		return;
+		int position = action.at(0) < 0 ? -1 : 1;
+		float amount = portfolio.capital * action.at(0);
+		portfolio.openPosition(position, priceSeries[t], amount, action.at(1), action.at(2), action.at(3), 1);
+		float startingValue = portfolio.valuate(priceSeries[t]);
+		float currentValue;
+		int act;
+		while (true) {
+			portfolio.managePositions(priceSeries[t]);
+			currentValue = portfolio.valuate(priceSeries[t]);
+			act = takeAction[t];
+			if (t >= takeAction.size() - 1 || currentValue <= 0) {
+				return std::make_tuple(-1, currentValue - startingValue);
+			}
+			if (portfolio.positions.size() == 0 && act == 1) {
+				return std::make_tuple(t, currentValue - startingValue);
+			}
+			t++;
+		}
 	}
 
 };
