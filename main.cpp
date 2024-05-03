@@ -2,11 +2,17 @@
 //
 
 #include "tradingenvs/tradingenv.h"
+#include <pybind11/pybind11.h>
 
-using namespace std;
+namespace py = pybind11;
 
-int main()
-{
-	cout << "Hello CMake." << endl;
+int main() {
 	return 0;
+}
+
+PYBIND11_MODULE(cpp_gym_envs, m) {
+	py::class_<MarginTradingEnv>(m, "MarginTradingEnv")
+		.def(py::init<float, float>())
+		.def("reset", &MarginTradingEnv::reset)
+		.def("step", &MarginTradingEnv::reset);
 }

@@ -15,24 +15,20 @@ namespace py = pybind11;
 class MarginTradingEnv {
 public:
 	MarginTradingEnv(float initialCapital_, float tradingFees_) : 
-		initialCapital(initialCapital_),
-		tradingFees(tradingFees_),
 		portfolio(MarginPortfolio(initialCapital_, tradingFees_))
 	{};
 
 	MarginPortfolio portfolio;
-	float initialCapital;
-	float tradingFees;
-	int step;
-	int t;
 	std::vector<float> priceSeries;
 	std::vector<int> takeAction;
+
+	int t;
 
 	int reset(std::vector<float> priceSeries_, std::vector<int> takeAction_) {
 		priceSeries = priceSeries_;
 		takeAction = takeAction_;
 		portfolio.reset();
-		t, step = 0;
+		t = 0;
 		int act;
 		while (true) {
 			if (t >= takeAction.size()) {
@@ -48,7 +44,7 @@ public:
 
 	std::tuple<int, float> step(py::array_t<float> action) {
 		int position = action.at(0) < 0 ? -1 : 1;
-		float amount = portfolio.capital * action.at(0);
+		float amount = position*action.at(0)* portfolio.capital;
 		portfolio.openPosition(position, priceSeries[t], amount, action.at(1), action.at(2), action.at(3), 1);
 		float startingValue = portfolio.valuate(priceSeries[t]);
 		float currentValue;
