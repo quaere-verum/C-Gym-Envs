@@ -41,10 +41,9 @@ public:
 		}
 	}
 
-	std::tuple<int, float> step(std::vector<float> action) {
-		int position = action.at(0) < 0 ? -1 : 1;
-		float amount = position*action.at(0)* portfolio.capital;
-		portfolio.openPosition(position, priceSeries[t], amount, action.at(1), action.at(2), action.at(3), 1);
+	std::tuple<int, float> step(int position, float allocation, float takeProfit, float stopLoss, int holdTime, float leverageMult) {
+		float amount = allocation * portfolio.capital;
+		portfolio.openPosition(position, priceSeries[t], amount, takeProfit, stopLoss, holdTime, leverageMult);
 		float startingValue = portfolio.valuate(priceSeries[t]);
 		float currentValue;
 		int act;

@@ -13,8 +13,8 @@ int main() {
 
 PYBIND11_MODULE(cpp_gym_envs, m) {
 	py::class_<MarginTradingEnv>(m, "MarginTradingEnv")
-		.def(py::init<float, float>())
-		.def("reset", &MarginTradingEnv::reset)
-		.def("step", &MarginTradingEnv::step)
+		.def(py::init<float, float>(), py::arg("initial_capital"), py::arg("trading_costs"))
+		.def("reset", &MarginTradingEnv::reset, py::arg("price_series"), py::arg("predictions"))
+		.def("step", &MarginTradingEnv::step, py::arg("position"), py::arg("allocation"), py::arg("take_profit"), py::arg("stop_loss"), py::arg("hold_time"), py::arg("leverage"))
 		.def_readonly("t", &MarginTradingEnv::t);
 }
