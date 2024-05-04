@@ -3,6 +3,7 @@
 
 #include "tradingenvs/tradingenv.h"
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 namespace py = pybind11;
 
@@ -14,5 +15,6 @@ PYBIND11_MODULE(cpp_gym_envs, m) {
 	py::class_<MarginTradingEnv>(m, "MarginTradingEnv")
 		.def(py::init<float, float>())
 		.def("reset", &MarginTradingEnv::reset)
-		.def("step", &MarginTradingEnv::reset);
+		.def("step", &MarginTradingEnv::step)
+		.def_readonly("t", &MarginTradingEnv::t);
 }

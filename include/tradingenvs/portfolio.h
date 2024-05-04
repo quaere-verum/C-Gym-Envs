@@ -45,12 +45,14 @@ public:
 
 	void managePositions(float price) {
 		float positionReturn;
-		for (int i = 0; i < positions.size(); i++) {
+		for (int i = positions.size() - 1; i>= 0; i--) {
 			positions[i].timeOpen += 1;
-			positionReturn = ((positions[i].entryPrice - price) / price - 1)*positions[i].leverageMult;
-			if (positionReturn < positions[i].stopLoss || positionReturn > positions[i].takeProfit || positions[i].timeOpen >= positions[i].holdTime)
-				capital += positions[i].leverageMult*positions[i].amount * price * positions[i].position * (1 - positions[i].position*tradingFees);
+			positionReturn = ((price - positions[i].entryPrice) / positions[i].entryPrice)*positions[i].leverageMult*positions[i].position;
+
+			if (positionReturn < positions[i].stopLoss || positionReturn > positions[i].takeProfit || positions[i].timeOpen >= positions[i].holdTime) {
+				capital += positions[i].leverageMult * positions[i].amount * price * positions[i].position * (1 - positions[i].position * tradingFees);
 				positions.erase(positions.begin() + i);
+			}
 		}
 	}
 

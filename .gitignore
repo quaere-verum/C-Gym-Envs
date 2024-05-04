@@ -4,6 +4,8 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
 pybind11/
+*.pyd
+*-info/
 
 # User-specific files
 *.rsuser

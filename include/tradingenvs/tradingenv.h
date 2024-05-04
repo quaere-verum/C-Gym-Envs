@@ -6,7 +6,6 @@
 #include <iostream>
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
-#include <cmath>
 #include <tradingenvs/portfolio.h>
 #include <vector>
 
@@ -42,7 +41,7 @@ public:
 		}
 	}
 
-	std::tuple<int, float> step(py::array_t<float> action) {
+	std::tuple<int, float> step(std::vector<float> action) {
 		int position = action.at(0) < 0 ? -1 : 1;
 		float amount = position*action.at(0)* portfolio.capital;
 		portfolio.openPosition(position, priceSeries[t], amount, action.at(1), action.at(2), action.at(3), 1);
@@ -50,6 +49,7 @@ public:
 		float currentValue;
 		int act;
 		while (true) {
+			t++;
 			portfolio.managePositions(priceSeries[t]);
 			currentValue = portfolio.valuate(priceSeries[t]);
 			act = takeAction[t];
@@ -59,8 +59,7 @@ public:
 			if (portfolio.positions.size() == 0 && act == 1) {
 				return std::make_tuple(t, currentValue - startingValue);
 			}
-			t++;
 		}
 	}
 
-};
+};	
