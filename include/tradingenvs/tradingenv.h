@@ -21,7 +21,7 @@ public:
 	std::vector<float> priceSeries;
 	std::vector<int> takeAction;
 
-	int t;
+	int t = 0;
 
 	int reset(std::vector<float> priceSeries_, std::vector<int> takeAction_) {
 		priceSeries = priceSeries_;

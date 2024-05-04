@@ -20,20 +20,18 @@ class TestEnv(gym.Env):
 
 	def reset(self):
 		self._step = 0
-		if self.t >= len(self.predictions) -1:
-			self.t = self.lookback_window
 		self.episode_start_t = self.t
 		self.t = self.episode_start_t + self.cpp_env.reset(self.prices[self.t:self.t+self.episode_bars+1], self.predictions[self.t:self.t+self.episode_bars+1])
 		return self.prices[self.t-self.lookback_window:self.t+1], None
 
 	def step(self, action):
 		t, reward = self.cpp_env.step(position=int(np.sign(action[0])), allocation=action[0], take_profit=action[1], stop_loss=action[2], hold_time=int(action[3]), leverage=1.)
+		if t < 0 or self._step > self.episode_length:
+			if self.episode_start_t + self.cpp_env.t >= len(self.predictions) - 1:
+				self.t = self.lookback_window
+			return self.prices[self.t-self.lookback_window:self.t+1], 0, True, True, None
 		self.t = self.episode_start_t + t
 		self._step += 1
-		if t < 0 or self._step > self.episode_length:
-			print('Episode terminated at time ', self.t)
-			return self.prices[self.t-self.lookback_window:self.t+1], 0, True, True, None
-		
 		return self.prices[self.t-self.lookback_window:self.t+1], reward, False, False, None
 
 
@@ -46,9 +44,11 @@ testenv = TestEnv(prices, predictions, 100, 0.001, 100, 10, 5)
 
 print(prices)
 print(predictions)
-for _ in range(2):
+for _ in range(10):
 	done, truncated = False, False
 	obs, info = testenv.reset()
+	total_reward = 0
 	while not done and not truncated:
 		obs, reward, done, truncated, info = testenv.step(np.array([-0.5, 0.05, -0.05, 6]))
-		print("Reward", reward)
+		total_reward += reward
+	print(f"Episode terminated at time {testenv.t}. Total reward: {total_reward:.2f}")
